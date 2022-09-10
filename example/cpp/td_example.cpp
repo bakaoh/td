@@ -68,7 +68,7 @@ class TdExample {
       } else if (!are_authorized_) {
         process_response(client_manager_->receive(10));
       } else {
-        std::this_thread::sleep_for(10000);
+        std::this_thread::sleep_for(10000ms);
         // std::cout << "Enter action [q] quit [u] check for updates and request results [c] show chats [m <chat_id> "
         //              "<text>] send message [me] show self [l] logout: "
         //           << std::endl;
@@ -103,6 +103,10 @@ class TdExample {
           std::cout << "Logging out..." << std::endl;
           send_query(td_api::make_object<td_api::logOut>(), {});
         } else if (action == "m") {
+          std::string line;
+          std::getline(std::cin, line);
+          std::istringstream ss(line);
+
           std::int64_t chat_id;
           ss >> chat_id;
           ss.get();
