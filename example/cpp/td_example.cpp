@@ -20,6 +20,11 @@
 #include <chrono>
 #include <thread>
 
+#include "httplib5.h"
+#include "json.hpp"
+
+using json = nlohmann::json;
+
 // Simple single-threaded example of TDLib usage.
 // Real world programs should use separate thread for the user input.
 // Example includes user authentication, receiving updates, getting chat list and sending text messages.
@@ -69,7 +74,7 @@ class TdExample {
       } else if (!are_authorized_) {
         process_response(client_manager_->receive(10));
       } else {
-        std::this_thread::sleep_for(10000ms);
+        std::this_thread::sleep_for(60000ms);
         // std::cout << "Enter action [q] quit [u] check for updates and request results [c] show chats [m <chat_id> "
         //              "<text>] send message [me] show self [l] logout: "
         //           << std::endl;
@@ -234,6 +239,13 @@ class TdExample {
                        }
                        std::cout << "Got message: [chat_id:" << chat_id << "] [from:" << sender_name << "] [" << text
                                  << "]" << std::endl;
+                       json body = {
+                                    {"chat_id", chat_id},
+                                    {"sender_name", sender_name},
+                                    {"text", text}
+                                   };
+                       httplib5::Client cli("localhost", 1984);
+                       cli.Post(path.c_str(), body.dump(), "application/json");
                      },
                      [](auto &update) {}));
   }
@@ -300,7 +312,7 @@ class TdExample {
                          create_authentication_query_handler());
             },
             [this](td_api::authorizationStateWaitEncryptionKey &) {
-              std::cout << "Enter encryption key or DESTROY: " << std::flush;
+              // std::cout << "Enter encryption key or DESTROY: " << std::flush;
               std::string key = "";
               // std::getline(std::cin, key);
               // if (key == "DESTROY") {
