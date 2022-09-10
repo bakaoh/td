@@ -17,6 +17,9 @@
 #include <string>
 #include <vector>
 
+#include <chrono>
+#include <thread>
+
 // Simple single-threaded example of TDLib usage.
 // Real world programs should use separate thread for the user input.
 // Example includes user authentication, receiving updates, getting chat list and sending text messages.
@@ -65,16 +68,18 @@ class TdExample {
       } else if (!are_authorized_) {
         process_response(client_manager_->receive(10));
       } else {
-        std::cout << "Enter action [q] quit [u] check for updates and request results [c] show chats [m <chat_id> "
-                     "<text>] send message [me] show self [l] logout: "
-                  << std::endl;
-        std::string line;
-        std::getline(std::cin, line);
-        std::istringstream ss(line);
-        std::string action;
-        if (!(ss >> action)) {
-          continue;
-        }
+        std::this_thread::sleep_for(10000);
+        // std::cout << "Enter action [q] quit [u] check for updates and request results [c] show chats [m <chat_id> "
+        //              "<text>] send message [me] show self [l] logout: "
+        //           << std::endl;
+        // std::string line;
+        // std::getline(std::cin, line);
+        // std::istringstream ss(line);
+        // std::string action;
+        // if (!(ss >> action)) {
+        //   continue;
+        // }
+        std::string action = "u";
         if (action == "q") {
           return;
         }
@@ -291,14 +296,14 @@ class TdExample {
             },
             [this](td_api::authorizationStateWaitEncryptionKey &) {
               std::cout << "Enter encryption key or DESTROY: " << std::flush;
-              std::string key;
-              std::getline(std::cin, key);
-              if (key == "DESTROY") {
-                send_query(td_api::make_object<td_api::destroy>(), create_authentication_query_handler());
-              } else {
+              std::string key = "";
+              // std::getline(std::cin, key);
+              // if (key == "DESTROY") {
+              //   send_query(td_api::make_object<td_api::destroy>(), create_authentication_query_handler());
+              // } else {
                 send_query(td_api::make_object<td_api::checkDatabaseEncryptionKey>(std::move(key)),
                            create_authentication_query_handler());
-              }
+              // }
             },
             [this](td_api::authorizationStateWaitTdlibParameters &) {
               auto parameters = td_api::make_object<td_api::tdlibParameters>();
