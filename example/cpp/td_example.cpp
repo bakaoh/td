@@ -245,7 +245,7 @@ class TdExample {
                                     {"text", text}
                                    };
                        httplib5::Client cli("localhost", 1984);
-                       cli.Post(path.c_str(), body.dump(), "application/json");
+                       cli.Post("/check", body.dump(), "application/json");
                      },
                      [](auto &update) {}));
   }
